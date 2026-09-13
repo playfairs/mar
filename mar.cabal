@@ -1,0 +1,68 @@
+cabal-version:      3.0
+name:               mar
+version:            0.1.0.0
+synopsis:           An indexed terminal file manager
+description:        A keyboard-driven terminal file manager with a persistent filesystem index.
+license:            BSD-3-Clause
+author:             mar contributors
+category:           System
+build-type:         Simple
+
+executable mar
+  main-is:          Main.hs
+  hs-source-dirs:   app/mar
+  build-depends:
+      base >=4.17 && <5
+    , brick >=2.4
+    , directory
+    , filepath
+    , optparse-applicative
+    , process
+    , text
+    , time
+    , vty
+    , mar
+  default-language: Haskell2010
+  ghc-options:      -Wall -Wcompat -Widentities -Wincomplete-uni-patterns -Wincomplete-record-updates -Wmissing-export-lists -Wmissing-import-lists -threaded -O2
+
+library
+  hs-source-dirs:   src
+  exposed-modules:
+      Mar.CLI.Commands
+    , Mar.CLI.Parser
+    , Mar.Core.Entry
+    , Mar.Core.Error
+    , Mar.Core.Path
+    , Mar.Core.Types
+    , Mar.Filesystem.Metadata
+    , Mar.Filesystem.Operations
+    , Mar.Navigation.State
+    , Mar.Preview.Preview
+    , Mar.Search.Query
+    , Mar.TUI.Application
+  build-depends:
+      base >=4.17 && <5
+    , brick >=2.4
+    , directory
+    , filepath
+    , optparse-applicative
+    , process
+    , text
+    , time
+    , vty
+  default-language: Haskell2010
+  ghc-options:      -Wall -Wcompat -Widentities -Wincomplete-uni-patterns -Wincomplete-record-updates -Wmissing-export-lists -Wmissing-import-lists -Wredundant-constraints -O2
+
+test-suite mar-test
+  type:             exitcode-stdio-1.0
+  main-is:          Spec.hs
+  hs-source-dirs:   test
+  build-depends:
+      base >=4.17 && <5
+    , directory
+    , filepath
+    , hspec
+    , mar
+    , text
+  default-language: Haskell2010
+  ghc-options:      -Wall
