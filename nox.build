@@ -1,5 +1,6 @@
 project "mar" {
-  version = "0.1.0.0"
+  version = file("./VERSION")
+  license = file("./UNLICENSE")
 
   executable.haskell "mar" {
     sources = [
