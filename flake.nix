@@ -1,5 +1,5 @@
 {
-  description = "mar, a fast indexed terminal file manager";
+  description = "mar, a fast local filesystem indexer and search CLI";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -24,6 +24,22 @@
           };
         };
         package = haskellPackages.mar;
+        noxWrapper = pkgs.writeShellScriptBin "nox" ''
+          set -eu
+          real_ghc="$(command -v ghc)"
+          quiet_dir="$(mktemp -d)"
+          trap 'rm -rf "$quiet_dir"' EXIT
+          cat > "$quiet_dir/ghc" <<EOF
+          #!${pkgs.runtimeShell}
+          if [ "\$1" = "--version" ]; then
+            "''${real_ghc}" --version >/dev/null 2>&1
+          else
+            exec "''${real_ghc}" "\$@"
+          fi
+          EOF
+          chmod +x "$quiet_dir/ghc"
+          PATH="$quiet_dir:$PATH" exec ${nox.packages.${system}.default}/bin/nox "$@"
+        '';
         formatter = pkgs.writeShellApplication {
           name = "mar-format";
           runtimeInputs = [
@@ -53,6 +69,7 @@
             pkgs.nixfmt-rfc-style
           ];
           shellHook = ''
+            export PATH="${noxWrapper}/bin:$PATH"
             						export MAR_CONFIG_DIR="''${MAR_CONFIG_DIR:-$HOME/.config/mar}"
             					'';
         };
