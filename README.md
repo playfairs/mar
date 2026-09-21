@@ -1,8 +1,6 @@
 # mar
 
-An indexed terminal file manager written in Haskell.
-
-mar combines a keyboard-driven three-pane browser with a persistent SQLite filesystem index. The index is optional for browsing, while global search uses it when available.
+mar is a fast local filesystem indexer and search CLI written in Haskell. It maintains a persistent SQLite index in the user's XDG data directory and never starts an interactive terminal UI.
 
 ## Development
 
@@ -13,17 +11,24 @@ nix flake check
 nix fmt
 ```
 
-Run the browser with `nix run`, or use the command-line interface:
+Use the command-line interface:
 
 ```sh
-mar .
-mar search "nox"
 mar index ~/Projects
-mar daemon
+mar search "nox"
+mar search "*.hs" --ext hs --json
+mar list ~/Projects --directories
+mar info ~/Projects/README.md --json
+mar root add ~/Projects
+mar update
+mar status
+mar roots
 ```
 
-The initial implementation keeps configuration in `~/.config/mar/config` and the index in `~/.local/share/mar/index.sqlite3`.
+`index` and `update` scan real filesystem metadata into SQLite. `search`, `list`, and `info` query that persistent index without rescanning. `--json` is available on search, list, info, roots, and status for scripting.
+
+The index is stored at `$XDG_DATA_HOME/mar/index.sqlite3` (or the platform XDG data directory when unset). Indexed roots are stored in the database.
 
 ## Layout
 
-The executable lives under `app/mar`. Library modules are grouped by subsystem under `src/Mar`, with tests mirroring those boundaries.
+The executable lives under `app/mar`. Library modules are grouped by CLI, filesystem, index, search, configuration, and core responsibilities.
