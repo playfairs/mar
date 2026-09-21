@@ -1,22 +1,24 @@
 project "mar" {
   version = "0.1.0.0"
 
-  executable "mar" {
+  executable.haskell "mar" {
     sources = [
       "app/mar/Main.hs",
       "src/Mar/CLI/Commands.hs",
       "src/Mar/CLI/Parser.hs",
-      "src/Mar/Core/Entry.hs",
-      "src/Mar/Core/Error.hs",
       "src/Mar/Core/Path.hs",
       "src/Mar/Core/Types.hs",
       "src/Mar/Filesystem/Metadata.hs",
-      "src/Mar/Filesystem/Operations.hs",
-      "src/Mar/Navigation/State.hs",
-      "src/Mar/Preview/Preview.hs",
-      "src/Mar/TUI/Application.hs"
+      "src/Mar/CLI/Output.hs",
+      "src/Mar/Config/Paths.hs",
+      "src/Mar/Config/Version.hs",
+      "src/Mar/Index/Crawler.hs",
+      "src/Mar/Index/Database.hs",
+      "src/Mar/Index/Query.hs",
+      "src/Mar/Index/Schema.hs",
+      "src/Mar/Index/Updater.hs",
+      "src/Mar/Search/Filters.hs",
     ]
-    flags = ["-threaded"]
     install = true
   }
 }

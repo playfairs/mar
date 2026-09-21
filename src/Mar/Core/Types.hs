@@ -1,18 +1,18 @@
-{-# LANGUAGE DeriveGeneric #-}
-
 module Mar.Core.Types (
     EntryType (..),
     Entry (..),
-    SortOrder (..),
+    Root (..),
+    IndexResult (..),
+    EntryInfo (..),
+    StatusInfo (..),
+    CrawlResult (..),
 ) where
 
 import Data.Text (Text)
 import Data.Time (UTCTime)
-import GHC.Generics (Generic)
-import System.FilePath (FilePath)
 
 data EntryType = RegularFile | Directory | SymbolicLink | Other
-    deriving (Eq, Ord, Show, Read, Generic)
+    deriving (Eq, Ord, Show, Read)
 
 data Entry = Entry
     { entryPath :: FilePath
@@ -25,8 +25,46 @@ data Entry = Entry
     , entryCreated :: Maybe UTCTime
     , entryPermissions :: Maybe Text
     , entryIsHidden :: Bool
+    , entrySymlinkTarget :: Maybe FilePath
     }
-    deriving (Eq, Show, Generic)
+    deriving (Eq, Show)
 
-data SortOrder = SortByName | SortByModified | SortBySize
-    deriving (Eq, Ord, Show, Read, Generic)
+data Root = Root
+    { rootPath :: FilePath
+    , rootAdded :: UTCTime
+    }
+    deriving (Eq, Show)
+
+data IndexResult = IndexResult
+    { indexRootPath :: FilePath
+    , indexScanned :: Int
+    , indexAdded :: Int
+    , indexUpdated :: Int
+    , indexRemoved :: Int
+    , indexFailures :: Int
+    }
+    deriving (Eq, Show)
+
+data EntryInfo = EntryInfo
+    { infoEntry :: Entry
+    , infoIndexed :: Bool
+    , infoChildren :: Int
+    }
+    deriving (Eq, Show)
+
+data StatusInfo = StatusInfo
+    { statusDatabase :: FilePath
+    , statusRoots :: Int
+    , statusFiles :: Int
+    , statusDirectories :: Int
+    , statusTotal :: Int
+    , statusDatabaseSize :: Integer
+    , statusLastUpdate :: Maybe UTCTime
+    }
+    deriving (Eq, Show)
+
+data CrawlResult = CrawlResult
+    { crawledEntries :: [Entry]
+    , crawlFailures :: [FilePath]
+    }
+    deriving (Eq, Show)

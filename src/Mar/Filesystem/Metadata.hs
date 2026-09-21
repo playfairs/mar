@@ -1,6 +1,5 @@
 module Mar.Filesystem.Metadata (
     inspectEntry,
-    listDirectoryEntries,
 ) where
 
 import Control.Exception (IOException, try)
@@ -14,16 +13,19 @@ import System.Directory (
     getFileSize,
     getModificationTime,
     getPermissions,
-    listDirectory,
+    getSymbolicLinkTarget,
+    pathIsSymbolicLink,
     readable,
     writable,
  )
-import System.FilePath (takeDirectory, takeExtension, takeFileName, (</>))
+import System.FilePath (takeDirectory, takeExtension, takeFileName)
 
 inspectEntry :: FilePath -> IO (Either IOException Entry)
 inspectEntry path = try $ do
+    symlink <- pathIsSymbolicLink path
     directory <- doesDirectoryExist path
     permissions <- getPermissions path
+    symlinkTarget <- if symlink then Just <$> getSymbolicLinkTarget path else pure Nothing
     size <- if directory then pure Nothing else Just <$> getFileSize path
     modified <- getModificationTime path
     let normalized = normalizePath path
@@ -31,7 +33,7 @@ inspectEntry path = try $ do
         extension = case takeExtension name of
             "" -> Nothing
             value -> Just (pack value)
-        kind = if directory then Directory else RegularFile
+        kind = if symlink then SymbolicLink else if directory then Directory else RegularFile
     pure
         Entry
             { entryPath = normalized
@@ -44,13 +46,8 @@ inspectEntry path = try $ do
             , entryCreated = Nothing
             , entryPermissions = Just (pack (permissionText permissions))
             , entryIsHidden = isHiddenName name
+            , entrySymlinkTarget = symlinkTarget
             }
-
-listDirectoryEntries :: FilePath -> IO [Entry]
-listDirectoryEntries directory = do
-    names <- listDirectory directory
-    results <- mapM (inspectEntry . (directory </>)) names
-    pure [entry | Right entry <- results]
 
 permissionText :: Permissions -> String
 permissionText permissions =
