@@ -38,7 +38,8 @@ runCommand command = case command of
     Version -> putStrLn ("mar " ++ showVersion marVersion)
     Search query options -> withDb $ \connection -> do
         path <- resolveOptionalPath (optionPath options)
-        entries <- searchEntries connection query (Filters (optionType options) (optionExtension options) (optionHidden options) path)
+        entries <-
+            searchEntries connection query (Filters (optionType options) (optionExtension options) (optionHidden options) path)
         printEntries (optionJson options) entries
     Index root -> do
         path <- requireDirectory root

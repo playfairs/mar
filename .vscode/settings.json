@@ -1,5 +1,6 @@
 {
   "files.associations": {
-    "VERSION": "plaintext"
+    "VERSION": "plaintext",
+    ".haskell-format": "yaml"
   }
 }
